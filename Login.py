@@ -24,7 +24,7 @@ loginWindow.iconbitmap("Resources/restaurant_4373.ico")
 loginWindow.geometry("500x350")
 
 
-# SetupDatabase()
+SetupDatabase()
 
 def loginAction():
     loginWindow.destroy()
