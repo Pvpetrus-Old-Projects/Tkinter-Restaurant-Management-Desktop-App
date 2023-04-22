@@ -1,6 +1,6 @@
 from customtkinter import *
 from tkinter import *
-from databaseSetup import SetupDatabase
+from DatabaseActions import *
 
 # label, button, entry,
 # grid, column, row, command (lambda do parametrów, text, bg, fg, pierwszy parametr oznacza gdzie coś przynalezy,
@@ -18,40 +18,55 @@ set_appearance_mode("dark")
 set_default_color_theme("green")
 
 # Stworzenie głównego okna
-loginWindow = CTk()
+loginWindow: CTk = CTk()
 loginWindow.title("Restaurant Manager")
 loginWindow.iconbitmap("Resources/restaurant_4373.ico")
 loginWindow.geometry("500x350")
 
-
 SetupDatabase()
 
-def loginAction():
-    loginWindow.destroy()
-    exec(open('Dashboard.py').read())
+
+def loginAction() -> None:
+    if loginToDatabase(username.get(), password.get()):
+        errorLabel.text = "Correct credentials"
+        user: tuple = returnCertainUserByUsernameAndPassword(username.get(),password.get())
+        userId: int = user[0]
+        sys.argv = [str(userId)]
+        loginWindow.destroy()
+        exec(open('Orders.py').read())
+        errorLabel.configure(text="Correct credentials")
+    else:
+        errorLabel.configure(text="Incorrect credentials")
 
 
-loginFrame = CTkFrame(master=loginWindow)
+loginFrame: CTkFrame = CTkFrame(master=loginWindow)
 loginFrame.pack(pady=20, padx=60, fill="both", expand=True)
 
-loginTitle = CTkLabel(loginFrame, text="Restaurant Manager", font=('Roboto', 31, 'bold'))
+loginTitle: CTkLabel = CTkLabel(loginFrame, text="Restaurant Manager", font=('Roboto', 31, 'bold'))
 loginTitle.pack(pady=12)
 
-loginDescription = CTkLabel(loginFrame, text=r"The accounts are created directly by the application provider. If you "
-                                             r"have not received credentials email us.",
-                            font=("Roboto", 14), text_color="grey", wraplength=300)
+loginDescription: CTkLabel = CTkLabel(loginFrame, text=r"The accounts are created directly by the application "
+                                                       r"provider. If you "
+                                                       r"have not received credentials email us.",
+                                      font=("Roboto", 14), text_color="grey", wraplength=300)
 loginDescription.pack(pady=3, padx=30)
 
-usernameEntry = CTkEntry(loginFrame, placeholder_text="Username", font=("Roboto", 16), width=250)
+username = StringVar()
+username.set("admin")
+usernameEntry: CTkEntry = CTkEntry(loginFrame, textvariable=username, placeholder_text="Username", font=("Roboto", 16),
+                                   width=250)
 usernameEntry.pack(pady=10)
 
-passwordEntry = CTkEntry(loginFrame, placeholder_text="Password", font=("Roboto", 16), width=250)
+password = StringVar()
+password.set("admin")
+passwordEntry: CTkEntry = CTkEntry(loginFrame, textvariable=password, placeholder_text="Password", font=("Roboto", 16),
+                                   width=250)
 passwordEntry.pack(pady=10)
 
-loginButton = CTkButton(loginFrame, text="Login", command=loginAction, width=150)
+loginButton: CTkButton = CTkButton(loginFrame, text="Login", command=loginAction, width=150)
 loginButton.pack(pady=10)
 
-errorLabel = CTkLabel(loginFrame, text="No Errors:)", font=("Roboto", 16), text_color="red")
+errorLabel: CTkLabel = CTkLabel(loginFrame, text="No Errors:)", font=("Roboto", 16), text_color="red")
 errorLabel.pack(pady=5)
 
 # Uruchomienie nasłuchiwania w aplikacji
