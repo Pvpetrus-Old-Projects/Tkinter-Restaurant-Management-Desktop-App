@@ -42,27 +42,19 @@ def SetupDatabase() -> None:
     SQLConnection.close()
 
 
-def returnAllUsers(orderId: int) -> list:
-    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
-    coursor = SQLConnection.cursor()
-
-    SQLConnection.commit()
-    SQLConnection.close()
-
-
 def returnAllOrdersForUser(userId: int) -> list:
     SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
     coursor = SQLConnection.cursor()
-
-    SQLConnection.commit()
+    coursor.execute(f"SELECT * FROM orderTable where userId={userId}")
+    ordersList: list = coursor.fetchall()
     SQLConnection.close()
+    return ordersList
 
 
 def returnAllItemsForOrder(orderId: int) -> list:
     SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
     coursor = SQLConnection.cursor()
 
-    SQLConnection.commit()
     SQLConnection.close()
 
 
@@ -88,7 +80,6 @@ def returnAllUsers() -> list:
     coursor.execute("""SELECT * FROM user""")
     usersList: list = coursor.fetchall()
 
-    SQLConnection.commit()
     SQLConnection.close()
     return usersList
 
@@ -99,7 +90,6 @@ def returnAllOrders() -> list:
     coursor.execute("""SELECT * FROM orderTable""")
     usersList: list = coursor.fetchall()
 
-    SQLConnection.commit()
     SQLConnection.close()
     return usersList
 
@@ -110,6 +100,53 @@ def returnAllItems() -> list:
     coursor.execute("""SELECT * FROM item""")
     usersList: list = coursor.fetchall()
 
-    SQLConnection.commit()
     SQLConnection.close()
     return usersList
+
+
+def returnCertainUser(user_id) -> tuple:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute(f"SELECT * FROM item where id={user_id}")
+    user: tuple = coursor.fetchall()[0]
+    SQLConnection.close()
+    return user
+
+
+def returnCertainOrder(order_id) -> tuple:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute(f"SELECT * FROM item where id={order_id}")
+    order: tuple = coursor.fetchall()[0]
+    SQLConnection.close()
+    return order
+
+
+def returnCertainItem(item_id) -> tuple:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute(f"SELECT * FROM item where id={item_id}")
+    item: tuple = coursor.fetchall()[0]
+    SQLConnection.close()
+    return item
+
+
+def loginToDatabase(username: str, password: str) -> bool:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM user where username=? and password=?', (username, password,))
+    if len(coursor.fetchall()) != 0:
+        SQLConnection.close()
+        print("be")
+        return True
+    else:
+        SQLConnection.close()
+        return False
+
+
+def returnCertainUserByUsernameAndPassword(username: str, password: str) -> tuple:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM user where username=? and password=?', (username, password,))
+    user=coursor.fetchall()[0]
+    return user
