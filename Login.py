@@ -18,6 +18,7 @@ set_appearance_mode("dark")
 set_default_color_theme("green")
 
 # Stworzenie głównego okna
+global loginWindow
 loginWindow: CTk = CTk()
 loginWindow.title("Restaurant Manager")
 loginWindow.iconbitmap("Resources/restaurant_4373.ico")
