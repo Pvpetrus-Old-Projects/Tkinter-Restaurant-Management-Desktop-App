@@ -46,6 +46,11 @@ def navigateToMenu() -> None:
     exec(open('Menu.py').read())
 
 
+def logout() -> None:
+    ordersWindow.destroy()
+    exec(open('Login.py').read())
+
+
 # navbar
 
 menuButton = CTkButton(ordersWindow, command=navigateToMenu, text="", fg_color="white")
@@ -53,7 +58,7 @@ menuButton.grid(pady=20, row=0, column=0)
 image = CTkImage(light_image=Image.open("Resources/menu.png"), size=(30, 30))
 menuImagelabel = CTkLabel(menuButton, text="", image=image)
 menuImagelabel.bind(navigateToMenu)
-menuImagelabel.grid(row=0, column=0, sticky=W+E+N+S)
+menuImagelabel.grid(row=0, column=0, sticky=W + E + N + S)
 
 dashboardButton = CTkButton(ordersWindow, command=navigateToDashboard, text="", fg_color="white")
 dashboardButton.grid(pady=20, row=0, column=1, columnspan=2)
@@ -70,6 +75,9 @@ OrdersMenuImage = CTkLabel(ordersButton, text="", image=image)
 OrdersMenuImage.grid(pady=5, row=0, column=0)
 ordersLabel = CTkLabel(ordersButton, text="Orders", font=("Kanit", 16))
 ordersLabel.grid(pady=5, row=0, column=1, sticky=W)
+
+logoutButton = CTkButton(ordersWindow, command=logout, text="Logout", fg_color="red")
+logoutButton.grid(pady=10, padx=25, row=0, column=6, sticky=E)
 
 # incoming
 
