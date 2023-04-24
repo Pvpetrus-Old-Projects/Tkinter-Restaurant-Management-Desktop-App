@@ -116,7 +116,7 @@ def returnCertainUser(user_id) -> tuple:
 def returnCertainOrder(order_id) -> tuple:
     SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
     coursor = SQLConnection.cursor()
-    coursor.execute(f"SELECT * FROM item where id={order_id}")
+    coursor.execute(f"SELECT * FROM orderTable where id={order_id}")
     order: tuple = coursor.fetchall()[0]
     SQLConnection.close()
     return order
@@ -148,5 +148,60 @@ def returnCertainUserByUsernameAndPassword(username: str, password: str) -> tupl
     SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
     coursor = SQLConnection.cursor()
     coursor.execute('SELECT * FROM user where username=? and password=?', (username, password,))
-    user=coursor.fetchall()[0]
+    user = coursor.fetchall()[0]
     return user
+
+
+def returnAmountOfIncoming(user_id) -> int:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id, "incoming",))
+    amountOfOrders: int = len(coursor.fetchall())
+    SQLConnection.close()
+    return amountOfOrders
+
+
+def returnAmountOfAccepted(user_id) -> int:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id, "accepted",))
+    amountOfOrders: int = len(coursor.fetchall())
+    SQLConnection.close()
+    return amountOfOrders
+
+
+def returnAmountOfReady(user_id) -> int:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id, "ready",))
+    amountOfOrders: int = len(coursor.fetchall())
+    SQLConnection.close()
+    return amountOfOrders
+
+
+def returnTotalRevenueForUser(user_id) -> float:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id, "ready",))
+    readyOrders: list = coursor.fetchall()
+    sum: float = 0
+    for order in readyOrders:
+        coursor.execute('SELECT * FROM item where orderId=?', (user_id,))
+        orderItems: list = coursor.fetchall()
+        for item in orderItems:
+            sum += (item[4] + item[5])*item[6]
+    SQLConnection.close()
+    return sum
+
+
+def returnAcceptedOrderRatioForUser(user_id) -> float:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=?', (user_id,))
+    orders: list = coursor.fetchall()
+    sumOfAcceptedOrders: float = 0
+    for order in orders:
+        if order[6] == "accepted":
+            sumOfAcceptedOrders += 1
+    SQLConnection.close()
+    return sumOfAcceptedOrders / len(orders) * 100
