@@ -42,31 +42,31 @@ def loginAction() -> None:
 loginFrame: CTkFrame = CTkFrame(master=loginWindow)
 loginFrame.pack(pady=20, padx=60, fill="both", expand=True)
 
-loginTitle: CTkLabel = CTkLabel(loginFrame, text="Restaurant Manager", font=('Roboto', 31, 'bold'))
+loginTitle: CTkLabel = CTkLabel(loginFrame, text="Restaurant Manager", font=('Kanit', 31, 'bold'))
 loginTitle.pack(pady=12)
 
 loginDescription: CTkLabel = CTkLabel(loginFrame, text=r"The accounts are created directly by the application "
                                                        r"provider. If you "
                                                        r"have not received credentials email us.",
-                                      font=("Roboto", 14), text_color="grey", wraplength=300)
+                                      font=("Kanit", 14), text_color="grey", wraplength=300)
 loginDescription.pack(pady=3, padx=30)
 
 username = StringVar()
 username.set("admin")
-usernameEntry: CTkEntry = CTkEntry(loginFrame, textvariable=username, placeholder_text="Username", font=("Roboto", 16),
+usernameEntry: CTkEntry = CTkEntry(loginFrame, textvariable=username, placeholder_text="Username", font=("Kanit", 16),
                                    width=250)
 usernameEntry.pack(pady=10)
 
 password = StringVar()
 password.set("admin")
-passwordEntry: CTkEntry = CTkEntry(loginFrame, textvariable=password, placeholder_text="Password", font=("Roboto", 16),
+passwordEntry: CTkEntry = CTkEntry(loginFrame, textvariable=password, placeholder_text="Password", font=("Kanit", 16),
                                    width=250)
 passwordEntry.pack(pady=10)
 
 loginButton: CTkButton = CTkButton(loginFrame, text="Login", command=loginAction, width=150)
 loginButton.pack(pady=10)
 
-errorLabel: CTkLabel = CTkLabel(loginFrame, text="No Errors:)", font=("Roboto", 16), text_color="red")
+errorLabel: CTkLabel = CTkLabel(loginFrame, text="No Errors:)", font=("Kanit", 16), text_color="red")
 errorLabel.pack(pady=5)
 
 # Uruchomienie nasłuchiwania w aplikacji
