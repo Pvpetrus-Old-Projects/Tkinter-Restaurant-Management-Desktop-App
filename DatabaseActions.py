@@ -1,5 +1,6 @@
 # Łączenie z bazą danych
 import sqlite3
+from datetime import datetime, timedelta
 from sqlite3 import Connection
 
 
@@ -37,21 +38,25 @@ def SetupDatabase() -> None:
                             '2012-06-18T11:37:09', NULL, NULL)""")
     coursor.execute("""INSERT INTO orderTable(id, userId, orderType, location, distance, customerName, orderStatus, 
                             createAt, acceptAt, finishAt, estimate) 
-                            VALUES (3, 1, 'takeout', '', 5, 'Martin', 'ready', '2012-06-18T12:34:09', 
-                            '2012-06-18T12:34:09', '2012-06-18T12:36:09', '2012-06-18T12:39:09')""")
+                            VALUES (3, 1, 'takeout', '', 5, 'Martin', 'ready', '2023-04-24T12:34:09', 
+                            '2023-04-24T12:34:09', '2023-04-24T12:36:09', '2023-04-24T12:39:09')""")
     # Creating items
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
                         VALUES (1,1,'Hot-dog','Additional ketchup + additional cheese', 10.5, 2.5, 1)""")
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
                             VALUES (2,1,'Hamburger','Additional mayo', 15.5, 1.0, 2)""")
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
-                            VALUES (3,2,'Hot-dog','Additional ketchup ', 10.5, 2.5, 1)""")
+                            VALUES (3,1,'Hot Chocolate','Additional cinnamon', 10.5, 2.5, 1)""")
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
-                                VALUES (4,2,'Pastrami','Additional mustard', 15.5, 1.0, 2)""")
+                                VALUES (4,1,'Coffee','Additional milk', 15.5, 1.0, 2)""")
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
-                            VALUES (5,2,'Fish and chips','Additional ketchup + additional cheese', 10.5, 2.5, 1)""")
+                            VALUES (5,2,'Hot-dog','Additional ketchup ', 10.5, 2.5, 1)""")
     coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
-                                VALUES (6,3,'Chips','Additional ketchup', 15.5, 1.0, 2)""")
+                                VALUES (6,2,'Pastrami','Additional mustard', 15.5, 1.0, 2)""")
+    coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
+                            VALUES (7,2,'Fish and chips','Additional ketchup + additional cheese', 10.5, 2.5, 1)""")
+    coursor.execute("""INSERT INTO item(id, orderId, name, description, mainPrice, secondaryPrice, count) 
+                                VALUES (8,3,'Chips','Additional ketchup', 15.5, 1.0, 2)""")
     # """Update SqliteDb_developers set salary = 10000 where id = 4"""
     # """DELETE from SqliteDb_developers where id = 4"""
 
@@ -227,9 +232,37 @@ def returnAcceptedOrderRatioForUser(user_id) -> float:
 def returnLastSevenDaysProfitList(user_id) -> list:
     SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
     coursor = SQLConnection.cursor()
-    coursor.execute('SELECT * FROM orderTable where userId=?', (user_id,))
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id, "ready",))
     orders: list = coursor.fetchall()
-    return []
+    ordersWithPrices: list[tuple] = []
+    for order in orders:
+        coursor.execute('SELECT * FROM item where orderId=?', (order[0],))
+        buforItems = coursor.fetchall()
+        # list of items for each order
+        sum = 0
+        for item in buforItems:
+            sum += (item[4] + item[5]) * item[6]
+        ordersWithPrices.append((order, sum))
+    print(ordersWithPrices)
+    last_days_list_with_prices = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)]
+    for orderWithPrice in ordersWithPrices:
+        print(datetime.strptime(datetime.today().strftime('%Y-%m-%d'),'%Y-%m-%d') - datetime.strptime(orderWithPrice[0][7].split('T')[0], '%Y-%m-%d'))
+        for day in last_days_list_with_prices:
+            if (datetime.strptime(datetime.today().strftime('%Y-%m-%d'),'%Y-%m-%d') - datetime.strptime(orderWithPrice[0][7].split('T')[0], '%Y-%m-%d')) == \
+                    timedelta(days=day[0]):
+                last_days_list_with_prices[day[0]] = (day[0], day[1] + orderWithPrice[1])
+    last_days_list_with_prices_with_dates = [
+        ("today",last_days_list_with_prices[0][1]),
+        ("yesterday", last_days_list_with_prices[1][1]),
+        ("2 d ago", last_days_list_with_prices[2][1]),
+        ("3 d ago", last_days_list_with_prices[3][1]),
+        ("4 d ago", last_days_list_with_prices[4][1]),
+        ("5 d ago", last_days_list_with_prices[5][1]),
+        ("6 d ago", last_days_list_with_prices[6][1])
+
+    ]
+    last_days_list_with_prices_with_dates.reverse()
+    return last_days_list_with_prices_with_dates
 
 
 def returnTopSellingDishesList(user_id) -> list:
@@ -267,8 +300,46 @@ def returnTopSellingDishesList(user_id) -> list:
                 itemsWithCountsTupleList[j + 1] = temp
 
     itemsWithCountsTupleList.reverse()
-    if len(itemsWithCountsTupleList) < 10:
+    SQLConnection.close()
+    if len(itemsWithCountsTupleList) < 5:
         return itemsWithCountsTupleList
     else:
-        return itemsWithCountsTupleList[:10]
+        return itemsWithCountsTupleList[:5]
+
+
+def changeUserPassword(user_id, password) -> bool:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('UPDATE user set password = ? where id = ?', (password, user_id))
     SQLConnection.close()
+    return True
+
+
+def deleteUserFromDatabase(user_id) -> bool:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('DELETE from user where id = ?', (user_id,))
+    SQLConnection.close()
+    return True
+
+def returnIncomingOrdersList(user_id) -> list:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id,"incoming",))
+    orders: list = coursor.fetchall()
+    return orders
+
+def returnAcceptedOrdersList(user_id) -> list:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM orderTable where userId=? and orderStatus=?', (user_id,"accepted",))
+    orders: list = coursor.fetchall()
+    return orders
+
+
+def returnItemsForOrderList(order_id) -> list:
+    SQLConnection: Connection = sqlite3.connect('RestaurantDatabase')
+    coursor = SQLConnection.cursor()
+    coursor.execute('SELECT * FROM item where orderId=?', (order_id,))
+    items: list = coursor.fetchall()
+    return items
