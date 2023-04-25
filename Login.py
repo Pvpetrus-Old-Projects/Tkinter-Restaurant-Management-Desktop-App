@@ -24,13 +24,14 @@ loginWindow.title("Restaurant Manager")
 loginWindow.iconbitmap("Resources/restaurant_4373.ico")
 loginWindow.geometry("500x350")
 
+#triggers again when logging out
 SetupDatabase()
 
 
 def loginAction() -> None:
     if loginToDatabase(username.get(), password.get()):
         errorLabel.text = "Correct credentials"
-        user: tuple = returnCertainUserByUsernameAndPassword(username.get(),password.get())
+        user: tuple = returnCertainUserByUsernameAndPassword(username.get(), password.get())
         userId: int = user[0]
         sys.argv = [str(userId)]
         loginWindow.destroy()
