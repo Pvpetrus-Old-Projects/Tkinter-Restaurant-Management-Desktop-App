@@ -165,31 +165,31 @@ viewAllButton.grid(pady=20, row=0, rowspan=2, column=1)
 doubleFrame = CTkFrame(dashboardWindow, fg_color="transparent", bg_color='transparent', height=300)
 doubleFrame.grid(pady=5, padx=15, row=3, rowspan=10, column=0, columnspan=8, sticky=W + E + N + S)
 doubleFrame.columnconfigure(0, weight=7)
-doubleFrame.columnconfigure(1, weight=3)
+doubleFrame.columnconfigure(1, weight=4)
 
 # revenue overview chart
 
-c_width = 400  # Define it's width
+c_width = 1100  # Define it's width
 c_height = 350  # Define it's height
-y_stretch = 15  # The highest y = max_data_value * y_stretch
+y_stretch = 5  # The highest y = max_data_value * y_stretch
 y_gap = 20  # The gap between lower canvas edge and x axis
-x_stretch = 10  # Stretch x wide enough to fit the variables
-x_width = 20  # The width of the x-axis
-x_gap = 20  # The gap between left canvas edge and y axis
+x_stretch = 40  # Stretch x wide enough to fit the variables
+x_width = 100  # The width of the x-axis
+x_gap = 40  # The gap between left canvas edge and y axis
 
 revenueOverviewFrame = CTkFrame(doubleFrame, fg_color="#FFFFFF", height=325)
 revenueOverviewFrame.grid(pady=5, padx=10, row=0, column=0, sticky=W + E + N + S)
 revenueOverviewChart = CTkCanvas(revenueOverviewFrame, width=c_width, height=c_height, bg='white')
 revenueOverviewChart.grid(row=0, column=0, sticky=W + E + N + S)
 
-"""for x, y in enumerate(returnLastSevenDaysProfitList(currentUserId)):
+for x, y in enumerate(returnLastSevenDaysProfitList(currentUserId)):
     # coordinates of each bar
 
     # Bottom left coordinate
     x0 = x * x_stretch + x * x_width + x_gap
 
     # Top left coordinates
-    y0 = c_height - (y * y_stretch + y_gap)
+    y0 = c_height - (y[1] * y_stretch + y_gap)
 
     # Bottom right coordinates
     x1 = x * x_stretch + x * x_width + x_width + x_gap
@@ -201,7 +201,7 @@ revenueOverviewChart.grid(row=0, column=0, sticky=W + E + N + S)
     revenueOverviewChart.create_rectangle(x0, y0, x1, y1, fill="red")
 
     # Put the y value above the bar
-    revenueOverviewChart.create_text(x0 + 2, y0, anchor=SW, text=str(y))"""
+    revenueOverviewChart.create_text(x0 + 2, y0, anchor=SW, text=str(y[0])+", "+str(y[1])+"$", font=("Kanit", 10))
 
 # top-selling (max 14)
 
