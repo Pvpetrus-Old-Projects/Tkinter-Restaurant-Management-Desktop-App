@@ -24,7 +24,7 @@ ordersWindow.columnconfigure(5, weight=13)
 ordersWindow.columnconfigure(6, weight=18)
 ordersWindow.rowconfigure(0, weight=1)
 ordersWindow.rowconfigure(1, weight=15)
-ordersWindow.rowconfigure(2, weight=3)
+ordersWindow.rowconfigure(2, weight=1)
 
 global currentUserId
 currentUserId = int(sys.argv[0])
@@ -88,12 +88,63 @@ incomingFrame.grid(pady=10, padx=10, row=1, rowspan=2, column=0, columnspan=6, s
 incomingFrame.columnconfigure(0, weight=1)
 incomingFrame.columnconfigure(1, weight=1)
 incomingFrame.columnconfigure(2, weight=15)
+incomingFrame.rowconfigure(0, weight=1)
 
 incomingLabel = CTkLabel(incomingFrame, text="Incoming", font=("Kanit", 20, "bold"))
 incomingLabel.grid(pady=10, padx=25, row=0, column=0, sticky=E)
 incomingAmountLabel = CTkLabel(incomingFrame, text=str(returnAmountOfIncoming(currentUserId)), font=("Kanit", 16),
                                corner_radius=10, fg_color='#F4F5F7')
 incomingAmountLabel.grid(pady=10, row=0, column=1, sticky=W)
+
+# incoming list
+
+for x, order in enumerate(returnIncomingOrdersList(currentUserId)):
+    incomingFrame.rowconfigure(x + 1, weight=5)
+    certainOrderFrame = CTkFrame(incomingFrame, bg_color="#FFFFFF", corner_radius=10)
+    certainOrderFrame.grid(pady=10, padx=10, row=x + 1, column=0, columnspan=3, sticky=W + E + S + N)
+    certainOrderFrame.columnconfigure(0, weight=3)
+    certainOrderFrame.columnconfigure(1, weight=1)
+    certainOrderFrame.columnconfigure(2, weight=2)
+    certainOrderFrame.rowconfigure(0, weight=1)
+    certainOrderFrame.rowconfigure(1, weight=3)
+    certainOrderFrame.rowconfigure(2, weight=2)
+
+    idLabel = CTkLabel(certainOrderFrame, text="#"+str(order[0]), font=("Kanit", 23),
+                       bg_color='transparent')
+    idLabel.grid(pady=5, padx=25, row=0, column=0, sticky=W)
+    customerNameLabel = CTkLabel(certainOrderFrame, text=str(order[5]), font=("Kanit", 18),
+                                 bg_color='transparent')
+    customerNameLabel.grid(pady=4, padx=25, row=1, column=0, sticky=W)
+
+    takeAwayButton = CTkButton(certainOrderFrame, text="Takeaway", width=25, height=20, fg_color="green",
+                               corner_radius=30)
+    takeAwayButton.grid(pady=4, padx=20, row=2, column=0, sticky=W)
+
+    # additional frame for items list
+    orderItemListFrame = CTkFrame(certainOrderFrame, bg_color="#F4F5F7", corner_radius=10)
+    orderItemListFrame.grid(pady=10, padx=10, row=0, rowspan=2, column=1, columnspan=2, sticky=W + E + S + N)
+    itemList = returnItemsForOrderList(order[0])
+    for count, item in enumerate(itemList):
+        if count > 2:
+            xMoreLabel = CTkLabel(orderItemListFrame, text="+"+str(int(len(itemList)) - count)+" more", font=("Kanit", 19),
+                                  bg_color='transparent')
+            xMoreLabel.grid(pady=4, padx=25, row=count + 1, column=2, sticky=W)
+            break
+        itemWithCountLabel = CTkLabel(orderItemListFrame, text=str(item[6]) + "x "+str(item[2]), font=("Kanit", 19),
+                                      bg_color='transparent')
+        itemWithCountLabel.grid(pady=4, padx=25, row=count + 1, column=2, sticky=W)
+
+    timeButton = CTkButton(certainOrderFrame, text="", width=25, height=25, fg_color="#F2F7ED", text_color="#589A1D", corner_radius=30)
+    timeButton.grid(pady=4, padx=20, row=2, column=1, sticky=E)
+    minutesValueLabel = CTkLabel(timeButton, text="15", font=("Kanit", 19),
+                          bg_color='transparent', text_color="#589A1D")
+    minutesValueLabel.grid(pady=1, padx=20, row=0, column=0, sticky=W+E+S+N)
+    minutesLabel = CTkLabel(timeButton, text="min.", font=("Kanit", 13),
+                            bg_color='transparent', text_color="#589A1D")
+    minutesLabel.grid(pady=1, padx=20, row=1, column=0, sticky=W+E+S+N)
+
+    acceptButton = CTkButton(certainOrderFrame, text="Accept", width=25, height=40, fg_color="blue", corner_radius=30)
+    acceptButton.grid(pady=25, padx=20, row=2, column=2, sticky=E)
 
 # accepted
 
@@ -110,6 +161,57 @@ acceptedAmountLabel = CTkLabel(acceptedFrame, text=str(returnAmountOfAccepted(cu
                                corner_radius=10, fg_color='#F4F5F7')
 acceptedAmountLabel.grid(pady=10, row=0, column=1, sticky=W)
 
+
+for x, order in enumerate(returnAcceptedOrdersList(currentUserId)):
+    acceptedFrame.rowconfigure(x + 1, weight=5)
+    certainOrderFrame = CTkFrame(acceptedFrame, bg_color="#FFFFFF", corner_radius=10)
+    certainOrderFrame.grid(pady=10, padx=10, row=x + 1, column=0, columnspan=3, sticky=W + E + S + N)
+    certainOrderFrame.columnconfigure(0, weight=3)
+    certainOrderFrame.columnconfigure(1, weight=1)
+    certainOrderFrame.columnconfigure(2, weight=2)
+    certainOrderFrame.rowconfigure(0, weight=1)
+    certainOrderFrame.rowconfigure(1, weight=3)
+    certainOrderFrame.rowconfigure(2, weight=3)
+
+    idLabel = CTkLabel(certainOrderFrame, text="#"+str(order[0]), font=("Kanit", 23),
+                       bg_color='transparent')
+    idLabel.grid(pady=5, padx=25, row=0, column=0, sticky=W)
+    customerNameLabel = CTkLabel(certainOrderFrame, text=str(order[5]), font=("Kanit", 18),
+                                 bg_color='transparent')
+    customerNameLabel.grid(pady=4, padx=25, row=1, column=0, sticky=W)
+
+    takeAwayButton = CTkButton(certainOrderFrame, text="Takeaway", width=25, height=20, fg_color="green",
+                               corner_radius=30)
+    takeAwayButton.grid(pady=4, padx=20, row=2, column=0, sticky=W)
+
+    # additional frame for items list
+    orderItemListFrame = CTkFrame(certainOrderFrame, bg_color="#F4F5F7", corner_radius=10)
+    orderItemListFrame.grid(pady=10, padx=10, row=0, rowspan=2, column=1, columnspan=2, sticky=W + E + S + N)
+    itemList = returnItemsForOrderList(order[0])
+    for count, item in enumerate(itemList):
+        if count > 2:
+            xMoreLabel = CTkLabel(orderItemListFrame, text="+"+str(int(len(itemList)) - count)+" more", font=("Kanit", 19),
+                                  bg_color='transparent')
+            xMoreLabel.grid(pady=4, padx=25, row=count + 1, column=2, sticky=W)
+            break
+        itemWithCountLabel = CTkLabel(orderItemListFrame, text=str(item[6]) + "x "+str(item[2]), font=("Kanit", 19),
+                                      bg_color='transparent')
+        itemWithCountLabel.grid(pady=4, padx=25, row=count + 1, column=2, sticky=W)
+
+    timeButton = CTkButton(certainOrderFrame, text="", width=25, height=25, fg_color="#F2F7ED", text_color="#589A1D", corner_radius=30)
+    timeButton.grid(pady=4, padx=20, row=2, column=1, sticky=E)
+    minutesValueLabel = CTkLabel(timeButton, text="15", font=("Kanit", 19),
+                          bg_color='transparent', text_color="#589A1D")
+    minutesValueLabel.grid(pady=1, padx=20, row=0, column=0, sticky=W+E+S+N)
+    minutesLabel = CTkLabel(timeButton, text="min.", font=("Kanit", 13),
+                            bg_color='transparent', text_color="#589A1D")
+    minutesLabel.grid(pady=1, padx=20, row=1, column=0, sticky=W+E+S+N)
+
+    acceptButton = CTkButton(certainOrderFrame, text="Ready", width=25, height=40, fg_color="green", corner_radius=30)
+    acceptButton.grid(pady=25, padx=20, row=2, column=2, sticky=E)
+
+# accepted list
+
 # ready
 
 readyFrame = CTkFrame(ordersWindow, fg_color="#FFFFFF")
@@ -120,10 +222,15 @@ readyFrame.columnconfigure(1, weight=1)
 readyFrame.columnconfigure(2, weight=15)
 
 readyLabel = CTkLabel(readyFrame, text="Ready", font=("Kanit", 20, "bold"))
-readyLabel.grid(pady=10, padx=25, row=0, column=0, sticky=E)
+readyLabel.grid(pady=25, padx=25, row=0, rowspan=2, column=0, sticky=E + N + S)
 readyAmountLabel = CTkLabel(readyFrame, text=str(returnAmountOfReady(currentUserId)), font=("Kanit", 16),
                             corner_radius=10, fg_color='#E8EAED')
-readyAmountLabel.grid(pady=10, row=0, column=1, sticky=W)
+readyAmountLabel.grid(pady=25, row=0, rowspan=2, column=1, sticky=W + N + S)
+newOrdersReadyLabel = CTkLabel(readyFrame, text="1 new order is ready", font=("Kanit", 18),
+                               text_color='#589A1D')
+newOrdersReadyLabel.grid(pady=25, padx=25, rowspan=2, row=0, column=2, sticky=E + N + S)
+
+# ready list
 
 """
 
